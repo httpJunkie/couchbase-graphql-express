@@ -8,8 +8,9 @@ const uuid = require('uuid')
 const app = express()
 const cluster  = new couchbase.Cluster("couchbase://localhost:8091/")
       cluster.authenticate("ebishard", "123456")
+
 const bucket = cluster.openBucket("travel-sample")
-      bucket.operationTimeout = 10000
+
 const schema = buildSchema(`
   type Query {
     airlinesUK: [Airline],
@@ -24,6 +25,7 @@ const schema = buildSchema(`
     name: String
   }
 `)
+
 const root = {
   airlinesUK: () => {
     let statement = 

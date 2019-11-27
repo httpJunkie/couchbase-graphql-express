@@ -29,29 +29,24 @@ const schema = buildSchema(`
 const root = {
   airlinesUK: () => {
     let statement = 
-      //"CREATE PRIMARY INDEX ON `default`;"+
-      "SELECT META(airline).id, airline.* FROM `travel-sample` AS airline WHERE airline.type = 'airline' " +
+      "SELECT META(airline).id, airline.*" +
+      "FROM `travel-sample` AS airline" +
+      "WHERE airline.type = 'airline' " +
       "AND airline.country = 'United Kingdom'"
     let query = couchbase.N1qlQuery.fromString(statement);
-    return new Promise((resolve, reject) => {
-      bucket.query(query, (error, result) => {
-        if (error) {
-          return reject(error)
-        }
-        resolve(result)
-      })
-    })
+    return new Promise((resolve, reject) => 
+      bucket.query(
+        query, (error, result) => error ? reject(error) : resolve(result)
+      )
+    )
   },
   airlineByKey: (data) => {
     let dbkey = "airline_" + data.id
-    return new Promise((resolve, reject) => {
-      bucket.get(dbkey, (error, result) => {
-        if (error) {
-          return reject(error)
-        }
-        resolve(result.value)
-      })
-    })
+    return new Promise((resolve, reject) =>
+      bucket.get(
+        dbkey, (error, result) => error ? reject(error) : resolve(result.value)
+      )
+    )
   }
 }
 

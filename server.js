@@ -9,7 +9,7 @@ const app = express()
 const cluster  = new couchbase.Cluster("couchbase://localhost:8091/")
       cluster.authenticate("ebishard", "123456")
 
-const bucket = cluster.openBucket("travel-sample")
+const bucket = cluster.openBucket("major-airlines")
 
 const schema = buildSchema(`
   type Query {

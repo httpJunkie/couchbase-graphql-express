@@ -10,17 +10,7 @@ const cluster  = new couchbase.Cluster("couchbase://localhost")
       cluster.authenticate("ebishard", "123456")
 
 const bucket = cluster.openBucket("travel-sample")
-let couchbaseConnected = null
-      
-bucket.on('error', (err) => {
-  couchbaseConnected = false;
-  console.log('couchbase bucket did not connect. \nERROR:', err);
-});
-
-bucket.on('connect', () => {
-  couchbaseConnected = true;
-  console.log('couchbase bucket connected successfully!');
-});
+      bucket.operationTimeout = 120 * 1000
 
 const schema = buildSchema(`
   type Query {
@@ -40,10 +30,7 @@ const schema = buildSchema(`
 const root = {
   airlinesUK: () => {
     let statement = 
-      "SELECT META(airline).id, airline.*" +
-      "FROM `travel-sample` AS airline" +
-      "WHERE airline.type = 'airline' " +
-      "AND airline.country = 'United Kingdom'"
+      "SELECT META(airline).id, airline.* FROM `travel-sample` AS airline WHERE airline.type = 'airline' AND airline.country = 'United Kingdom'"
     let query = couchbase.N1qlQuery.fromString(statement);
     return new Promise((resolve, reject) => 
       bucket.query(

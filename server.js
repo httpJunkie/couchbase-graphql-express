@@ -6,10 +6,21 @@ const couchbase = require('couchbase')
 const uuid = require('uuid')
 
 const app = express()
-const cluster  = new couchbase.Cluster("couchbase://localhost:8091/")
+const cluster  = new couchbase.Cluster("couchbase://localhost")
       cluster.authenticate("ebishard", "123456")
 
-const bucket = cluster.openBucket("major-airlines")
+const bucket = cluster.openBucket("travel-sample")
+let couchbaseConnected = null
+      
+bucket.on('error', function(err) {
+  couchbaseConnected = false;
+  console.log('couchbase bucket did not connect. \nERROR:', err);
+});
+
+bucket.on('connect', function () {
+  couchbaseConnected = true;
+  console.log('couchbase bucket connected successfully!');
+});
 
 const schema = buildSchema(`
   type Query {

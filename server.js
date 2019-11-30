@@ -12,12 +12,12 @@ const cluster  = new couchbase.Cluster("couchbase://localhost")
 const bucket = cluster.openBucket("travel-sample")
 let couchbaseConnected = null
       
-bucket.on('error', function(err) {
+bucket.on('error', (err) => {
   couchbaseConnected = false;
   console.log('couchbase bucket did not connect. \nERROR:', err);
 });
 
-bucket.on('connect', function () {
+bucket.on('connect', () => {
   couchbaseConnected = true;
   console.log('couchbase bucket connected successfully!');
 });

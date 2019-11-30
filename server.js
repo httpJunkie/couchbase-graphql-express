@@ -4,6 +4,7 @@ const { buildSchema } = require('graphql')
 
 const couchbase = require('couchbase')
 const uuid = require('uuid')
+const cors = require('cors');
 
 const app = express()
 const cluster  = new couchbase.Cluster("couchbase://localhost")
@@ -30,7 +31,11 @@ const schema = buildSchema(`
 const root = {
   airlinesUK: () => {
     let statement = 
-      "SELECT META(airline).id, airline.* FROM `travel-sample` AS airline WHERE airline.type = 'airline' AND airline.country = 'United Kingdom'"
+      "SELECT META(airline).id, airline.* " +
+      "FROM `travel-sample` AS airline " +
+      "WHERE airline.type = 'airline' " +
+      "AND airline.country = 'United Kingdom'" +
+      "ORDER BY airline.name ASC"
     let query = couchbase.N1qlQuery.fromString(statement);
     return new Promise((resolve, reject) => 
       bucket.query(
@@ -50,6 +55,8 @@ const root = {
 
 const serverPort = 4000
 const serverUrl = '/graphql'
+
+app.use(cors())
 app.use(serverUrl, graphqlHTTP({
   schema: schema,
   rootValue: root,
